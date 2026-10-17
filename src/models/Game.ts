@@ -40,8 +40,11 @@ export default class Game {
 
       this.setClassesGame(() => {
         PlayerSelf.init(() => {
-          const serverClient = new ServerClient(playerId)
-          serverClient.init()
+          // Single-player by default; enable Lola multiplayer explicitly.
+          if (process.env.VUE_APP_MULTIPLAYER_ENABLED === 'true') {
+            const serverClient = new ServerClient(playerId)
+            serverClient.init()
+          }
 
           store.subscribeAddPlayer((playerId: string) => {
             new Player(playerId)
