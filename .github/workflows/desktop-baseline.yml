@@ -1,0 +1,30 @@
+name: Desktop baseline build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Build web game
+        run: npm run build
+      - name: Verify static deployment files
+        run: node scripts/check-build.cjs
+      - name: Archive compiled game
+        uses: actions/upload-artifact@v4
+        with:
+          name: school-web-build
+          path: dist/
+          retention-days: 7
