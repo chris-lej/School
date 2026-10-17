@@ -7,7 +7,7 @@
     "npm": ">=9.5"
   },
   "scripts": {
-    "build": "vue-cli-service build --dest ../lola-build/dist",
+    "build": "vue-cli-service build --dest dist",
     "serve": "vue-cli-service serve",
     "lint": "vue-cli-service lint"
   },
