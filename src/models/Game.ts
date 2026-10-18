@@ -20,6 +20,7 @@ import OutLiner from "@/models/scene/OutLiner"
 import Doors from '@/models/mehanics/Doors'
 import Prefabs from '@/models/scene/Prefabs'
 import Optimize from '@/models/scene/Optimize'
+import addSchoolCourtyard from '@/models/school/Courtyard'
 
 export default class Game {
   
@@ -40,6 +41,9 @@ export default class Game {
 
       this.setClassesGame(() => {
         PlayerSelf.init(() => {
+          if (new URLSearchParams(window.location.search).get('schoolPrototype') === '1') {
+            addSchoolCourtyard()
+          }
           // Single-player by default; enable Lola multiplayer explicitly.
           if (process.env.VUE_APP_MULTIPLAYER_ENABLED === 'true') {
             const serverClient = new ServerClient(playerId)
