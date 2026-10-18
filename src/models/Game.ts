@@ -20,6 +20,7 @@ import OutLiner from "@/models/scene/OutLiner"
 import Doors from '@/models/mehanics/Doors'
 import Prefabs from '@/models/scene/Prefabs'
 import Optimize from '@/models/scene/Optimize'
+import addSchoolCourtyard from '@/models/school/Courtyard'
 
 export default class Game {
   
@@ -33,6 +34,16 @@ export default class Game {
     const canvas = Canvas.setCanvas()
     const engine = new Engine(canvas, true, { preserveDrawingBuffer: false, stencil: true })
     const sceneModel = new Scene(engine)
+    const prototypeEnabled = new URLSearchParams(window.location.search).get('schoolPrototype') === '1'
+    if (prototypeEnabled) {
+      const indicator = document.createElement('div')
+      indicator.id = 'school-prototype-status'
+      indicator.setAttribute('data-school-build', 'courtyard-v2')
+      indicator.style.cssText = 'position:fixed;top:12px;right:12px;z-index:2147483647;background:#123d43;color:white;padding:10px 14px;border:2px solid #ffd166;border-radius:6px;font:600 14px Arial,sans-serif;pointer-events:none'
+      indicator.textContent = 'SCHOOL SAGA • courtyard-v2 • loading'
+      document.body.appendChild(indicator)
+      console.info('[School Saga] courtyard-v2 prototype enabled')
+    }
     
     sceneModel.load(async () => {
       new Audio()
@@ -40,6 +51,18 @@ export default class Game {
 
       this.setClassesGame(() => {
         PlayerSelf.init(() => {
+          if (prototypeEnabled) {
+            const indicator = document.getElementById('school-prototype-status')
+            try {
+              addSchoolCourtyard()
+              const count = globalThis.scene.meshes.filter(mesh => mesh.name.startsWith('school_') || mesh.name.startsWith('courtyard_')).length
+              if (indicator) indicator.textContent = 'SCHOOL SAGA • courtyard-v2 • ' + count + ' meshes'
+              console.info('[School Saga] courtyard-v2 mesh count:', count)
+            } catch (error) {
+              if (indicator) indicator.textContent = 'SCHOOL SAGA • courtyard-v2 • ERROR'
+              console.error('[School Saga] courtyard prototype failed:', error)
+            }
+          }
           // Single-player by default; enable Lola multiplayer explicitly.
           if (process.env.VUE_APP_MULTIPLAYER_ENABLED === 'true') {
             const serverClient = new ServerClient(playerId)
